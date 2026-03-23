@@ -45,6 +45,12 @@ export default function Navbar() {
                       Manage Products
                     </Link>
                     <Link
+                      href="/admin/orders"
+                      className="hover:text-blue-300 transition"
+                    >
+                      Manage Orders
+                    </Link>
+                    <Link
                       href="/admin/add-product"
                       className="bg-green-600 px-3 py-1 rounded hover:bg-green-700 transition"
                     >

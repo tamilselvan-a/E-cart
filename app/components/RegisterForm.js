@@ -28,38 +28,50 @@ export default function RegisterForm() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    setLoading(true);
 
     const { name, email, password, confirmPassword } = formData;
 
-    // Validation
+    // Validation checks
     if (!name.trim()) {
       setError('Name is required');
-      setLoading(false);
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Email is required');
       return;
     }
 
     if (!validateEmail(email)) {
-      setError('Please enter a valid email');
-      setLoading(false);
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!password.trim()) {
+      setError('Password is required');
       return;
     }
 
     if (!validatePassword(password)) {
       setError('Password must be at least 6 characters');
-      setLoading(false);
+      return;
+    }
+
+    if (!confirmPassword.trim()) {
+      setError('Please confirm your password');
       return;
     }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
       // Mock registration - in production, call your backend API
@@ -73,7 +85,6 @@ export default function RegisterForm() {
       }
     } catch (err) {
       setError('Registration failed. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -81,20 +92,20 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-50 border border-red-500 text-red-900 px-4 py-3 rounded shadow-sm" role="alert">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+        <div className="bg-green-50 border border-green-500 text-green-900 px-4 py-3 rounded shadow-sm" role="status">
           {success}
         </div>
       )}
 
       {/* Full Name */}
       <div>
-        <label className="block text-sm font-medium mb-2">Full Name</label>
+        <label className="block text-sm font-bold mb-2">Full Name</label>
         <input
           type="text"
           name="name"
@@ -102,13 +113,12 @@ export default function RegisterForm() {
           onChange={handleChange}
           placeholder="John Doe"
           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          required
         />
       </div>
 
       {/* Email */}
       <div>
-        <label className="block text-sm font-medium mb-2">Email</label>
+        <label className="block text-sm font-bold mb-2">Email</label>
         <input
           type="email"
           name="email"
@@ -116,13 +126,12 @@ export default function RegisterForm() {
           onChange={handleChange}
           placeholder="your@email.com"
           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          required
         />
       </div>
 
       {/* Password */}
       <div>
-        <label className="block text-sm font-medium mb-2">Password</label>
+        <label className="block text-sm font-bold mb-2">Password</label>
         <input
           type="password"
           name="password"
@@ -130,13 +139,12 @@ export default function RegisterForm() {
           onChange={handleChange}
           placeholder="••••••••"
           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          required
         />
       </div>
 
       {/* Confirm Password */}
       <div>
-        <label className="block text-sm font-medium mb-2">Confirm Password</label>
+        <label className="block text-sm font-bold mb-2">Confirm Password</label>
         <input
           type="password"
           name="confirmPassword"
@@ -144,7 +152,6 @@ export default function RegisterForm() {
           onChange={handleChange}
           placeholder="••••••••"
           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          required
         />
       </div>
 

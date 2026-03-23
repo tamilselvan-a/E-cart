@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useCart } from '../contexts/CartContext';
 import { useRouter } from 'next/navigation';
@@ -9,6 +10,7 @@ import { useRouter } from 'next/navigation';
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const router = useRouter();
+  const [imageErrors, setImageErrors] = useState({});
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
@@ -16,6 +18,10 @@ export default function CartPage() {
       return;
     }
     router.push('/checkout');
+  };
+
+  const handleImageError = (productId) => {
+    setImageErrors(prev => ({ ...prev, [productId]: true }));
   };
 
   return (
@@ -31,13 +37,26 @@ export default function CartPage() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
                     {/* Product Image */}
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={96}
-                      height={96}
-                      className="w-24 h-24 object-cover rounded"
-                    />
+                    <div className="w-24 h-24 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                      {!imageErrors[item.id] ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover"
+                          onError={() => handleImageError(item.id)}
+                          unoptimized={true}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                          <div className="text-center text-gray-500 text-xs">
+                            <div className="text-lg mb-1">📦</div>
+                            <div>Image</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Product Info */}
                     <div className="flex-1">

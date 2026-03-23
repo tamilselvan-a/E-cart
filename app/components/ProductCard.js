@@ -2,12 +2,15 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
 export default function ProductCard({ product, isAdmin = false, onEdit, onDelete }) {
   const { isAuthenticated, user } = useAuth();
   const { addToCart } = useCart();
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -24,16 +27,43 @@ export default function ProductCard({ product, isAdmin = false, onEdit, onDelete
     }
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
       {/* Product Image */}
       <div className="relative h-48 bg-gray-200 overflow-hidden">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="w-full h-full object-cover hover:scale-105 transition"
-        />
+        {imageLoading && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+        {!imageError ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className={`w-full h-full object-cover hover:scale-105 transition ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+            priority={false}
+            unoptimized={true}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-300">
+            <div className="text-center text-black-500">
+              <div className="text-4xl mb-2">📦</div>
+              <div className="text-sm">Image not available</div>
+            </div>
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-sm">
           {product.category}
         </div>
@@ -42,12 +72,12 @@ export default function ProductCard({ product, isAdmin = false, onEdit, onDelete
       {/* Product Info */}
       <div className="p-4">
         <h3 className="font-bold text-lg mb-2 line-clamp-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+        <p className="text-black text-sm mb-3 line-clamp-2">{product.description}</p>
 
         {/* Rating */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-yellow-400">⭐ {product.rating}</span>
-          <span className="text-gray-500 text-sm">({product.reviews} reviews)</span>
+          <span className="text-black-500 text-sm">({product.reviews} reviews)</span>
         </div>
 
         {/* Stock Status */}

@@ -44,7 +44,7 @@ export default function EditProductPage() {
     }
   }, [product]);
 
-  const categories = ['Electronics', 'Accessories', 'Office'];
+  const categories = ['Electronics', 'Accessories', 'Office', 'Home', 'Sports', 'Books', 'Clothing', 'Beauty'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;

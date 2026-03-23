@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useOrders } from '../contexts/OrderContext';
 
 export default function CheckoutPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +22,8 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false);
 
   const { cartItems, getTotalPrice, clearCart } = useCart();
+  const { user } = useAuth();
+  const { createOrder } = useOrders();
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -36,6 +40,24 @@ export default function CheckoutPage() {
 
     // Simulate payment processing
     setTimeout(() => {
+      // Create order
+      const orderData = {
+        userEmail: user.email,
+        userName: formData.fullName,
+        items: cartItems,
+        total: getTotalPrice(),
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          zipCode: formData.zipCode,
+        },
+        paymentInfo: {
+          cardNumber: formData.cardNumber.replace(/\d(?=\d{4})/g, '*'), // Mask card number
+          expiryDate: formData.expiryDate,
+        },
+      };
+      createOrder(orderData);
+
       setSuccess(true);
       clearCart();
       setLoading(false);

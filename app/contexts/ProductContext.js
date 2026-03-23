@@ -9,6 +9,27 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState(mockProducts);
   const [loading, setLoading] = useState(false);
 
+  // Load products from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedProducts = localStorage.getItem('products');
+      if (savedProducts) {
+        try {
+          setProducts(JSON.parse(savedProducts));
+        } catch (error) {
+          // If parsing fails, use mock products
+          setProducts(mockProducts);
+          localStorage.setItem('products', JSON.stringify(mockProducts));
+        }
+      }
+    }
+  }, []);
+
+  // Save products to localStorage whenever products change
+  useEffect(() => {
+    localStorage.setItem('products', JSON.stringify(products));
+  }, [products]);
+
   const addProduct = (product) => {
     const newProduct = {
       ...product,
